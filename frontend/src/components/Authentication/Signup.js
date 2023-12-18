@@ -9,6 +9,8 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useHistory } from 'react-router-dom'
 
 const Signup = () => {
   // state management
@@ -21,6 +23,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   // for displaying toast message
   const toast = useToast();
+  const history = useHistory();
 
   // function to display the password
   const handleClick = () => setShow(!show);
@@ -97,6 +100,52 @@ const Signup = () => {
         position: "bottom",
       });
       return;
+    }
+
+    // API request to save it into database!
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post(
+        "/api/user",
+        {
+          name,
+          email,
+          password,
+          pic,
+        },
+        config
+      );
+
+    //   Registration Successful
+      toast({
+        title: "Registration Successfull!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+
+    //   setting up the details in Local Storage
+    localStorage.setItem('userInfo' , JSON.stringify(data));
+
+    history.push('/chats')
+
+    setLoading(false);
+    } catch (error) {
+        toast({
+            title: "Error Occured!",
+            description : error.response.data.message ,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+          setLoading(false);
     }
   };
 
