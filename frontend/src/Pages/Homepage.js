@@ -26,8 +26,8 @@ const Homepage = () => {
         borderRadius="lg"
         borderWidth="1px"
       >
-        <Text fontSize="4xl" fontFamily="Work sans" color="black">
-          Chat Application!
+        <Text fontSize="4xl" fontFamily="Anurati" color="black">
+          EKTA a Chatting Application
         </Text>
       </Box>
       <Box
