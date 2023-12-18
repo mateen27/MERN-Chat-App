@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const colors = require("colors");
 require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
+const { errorHandler, notFound } = require("./middlewares/errorMiddleware");
 
 // connecting to database
 connectDB();
@@ -18,6 +19,10 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRoutes);
+
+// Error Handling API
+app.use(notFound)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 8081;
 
