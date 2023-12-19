@@ -27,7 +27,7 @@ const Homepage = () => {
         borderWidth="1px"
       >
         <Text fontSize="4xl" fontFamily="Anurati" color="black">
-          EKTA a Chatting Application
+          EKTA 
         </Text>
       </Box>
       <Box
