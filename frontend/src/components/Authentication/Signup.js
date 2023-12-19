@@ -10,7 +10,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useHistory } from 'react-router-dom'
+import { useHistory } from "react-router-dom";
 
 const Signup = () => {
   // state management
@@ -121,7 +121,7 @@ const Signup = () => {
         config
       );
 
-    //   Registration Successful
+      //   Registration Successful
       toast({
         title: "Registration Successfull!",
         status: "success",
@@ -130,22 +130,22 @@ const Signup = () => {
         position: "bottom",
       });
 
-    //   setting up the details in Local Storage
-    localStorage.setItem('userInfo' , JSON.stringify(data));
+      //   setting up the details in Local Storage
+      localStorage.setItem("userInfo", JSON.stringify(data));
 
-    history.push('/chats')
+      history.push("/chats");
 
-    setLoading(false);
+      setLoading(false);
     } catch (error) {
-        toast({
-            title: "Error Occured!",
-            description : error.response.data.message ,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "bottom",
-          });
-          setLoading(false);
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setLoading(false);
     }
   };
 
