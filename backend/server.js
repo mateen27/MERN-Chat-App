@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const colors = require("colors");
 require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 const { errorHandler, notFound } = require("./middlewares/errorMiddleware");
 
 // connecting to database
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Error Handling API
 app.use(notFound)
