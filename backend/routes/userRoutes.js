@@ -1,5 +1,5 @@
 const express = require("express");
-const { registerUser, authUser } = require("../controllers/userController");
+const { registerUser, authUser, allUsers } = require("../controllers/userController");
 
 // instance of router
 const router = express.Router();
@@ -8,5 +8,7 @@ const router = express.Router();
 router.route("/").post(registerUser);
 // for login
 router.post('/login' , authUser)
+// User Searching API
+router.route("/").get(allUsers)
 
 module.exports = router;
