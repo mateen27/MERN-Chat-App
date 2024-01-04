@@ -1,62 +1,61 @@
-import React from "react";
 import {
-  Container,
   Box,
-  Text,
-  Tabs,
-  TabList,
-  TabPanels,
+  Container,
   Tab,
+  TabList,
   TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { useHistory } from "react-router";
 import Login from "../components/Authentication/Login";
 import Signup from "../components/Authentication/Signup";
 
-const Homepage = () => {
+function Homepage() {
+  const history = useHistory();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+
+    if (user) history.push("/chats");
+  }, [history]);
+
   return (
-    // Header Text of the Application
     <Container maxW="xl" centerContent>
       <Box
         d="flex"
-        textAlign={"center"}
+        justifyContent="center"
         p={3}
-        bg={"white"}
+        bg="white"
         w="100%"
         m="40px 0 15px 0"
         borderRadius="lg"
         borderWidth="1px"
       >
-        <Text fontSize="4xl" fontFamily="Anurati" color="black">
-          EKTA 
+        <Text fontSize="4xl" fontFamily="Anurati">
+          EKTA
         </Text>
       </Box>
-      <Box
-        d="flex"
-        // textAlign={'center'}
-        p={4}
-        bg={"white"}
-        color={'black'}
-        w="100%"
-        borderRadius="lg"
-        borderWidth="1px"
-      >
-        <Tabs variant="soft-rounded">
-          <TabList mb={'1em'}>
-            <Tab width={'50%'}>Login</Tab>
-            <Tab width={'50%'}>Sign Up</Tab>
+      <Box bg="white" w="100%" p={4} borderRadius="lg" borderWidth="1px">
+        <Tabs isFitted variant="soft-rounded">
+          <TabList mb="1em">
+            <Tab>Login</Tab>
+            <Tab>Sign Up</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
-              <Login/>
+              <Login />
             </TabPanel>
             <TabPanel>
-              <Signup/>
+              <Signup />
             </TabPanel>
           </TabPanels>
         </Tabs>
       </Box>
     </Container>
   );
-};
+}
 
 export default Homepage;

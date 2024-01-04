@@ -1,42 +1,29 @@
-import React, { useState } from "react";
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
-  VStack,
-  useToast,
-} from "@chakra-ui/react";
+import { Button } from "@chakra-ui/button";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
+import { VStack } from "@chakra-ui/layout";
+import { useState } from "react";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
+import { ChatState } from "../../Context/ChatProvider";
 
 const Login = () => {
-  // state management
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const handleClick = () => setShow(!show);
+  const toast = useToast();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
   const [loading, setLoading] = useState(false);
 
-  const toast = useToast();
   const history = useHistory();
-
-  // function to display the password
-  const handleClick = () => setShow(!show);
-
-  // function to set guest user credentials
-  const setGuestCredentials = () => {
-    setEmail("ekta@main.com");
-    setPassword("12345678");
-  };
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
-    // Implementing login logic here
     setLoading(true);
     if (!email || !password) {
       toast({
-        title: "Please Fill all the Fields!",
+        title: "Please Fill all the Feilds",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -47,11 +34,11 @@ const Login = () => {
     }
 
     try {
-        const config = {
-            headers: {
-              "Content-type": "application/json",
-            },
-        };
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
 
       const { data } = await axios.post(
         "/api/user/login",
@@ -66,71 +53,67 @@ const Login = () => {
         isClosable: true,
         position: "bottom",
       });
-
+      setUser(data);
       localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);
       history.push("/chats");
     } catch (error) {
-        console.error(error); // Log the full error object for debugging
-        toast({
-          title: "Error Occured!",
-          description: error.response?.data?.message || "Unknown error",
-          status: "warning",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
       setLoading(false);
     }
   };
 
   return (
-    <VStack spacing={"5px"} color={"black"}>
-      {/* Email */}
+    <VStack spacing="10px">
       <FormControl id="email" isRequired>
-        <FormLabel>Email</FormLabel>
+        <FormLabel>Email Address</FormLabel>
         <Input
-          placeholder="Enter you Email"
           value={email}
+          type="email"
+          placeholder="Enter Your Email Address"
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
-
-      {/* Password */}
       <FormControl id="password" isRequired>
         <FormLabel>Password</FormLabel>
-        <InputGroup>
+        <InputGroup size="md">
           <Input
-            type={show ? "text" : "password"}
             value={password}
-            placeholder="Enter you Password"
             onChange={(e) => setPassword(e.target.value)}
+            type={show ? "text" : "password"}
+            placeholder="Enter password"
           />
-          <InputRightElement width={"4.5rem"}>
+          <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
               {show ? "Hide" : "Show"}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
-
-      {/* Button */}
       <Button
         colorScheme="blue"
-        width={"100%"}
+        width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
         isLoading={loading}
       >
         Login
       </Button>
-
-      {/* Button for guest User Login */}
       <Button
         variant="solid"
         colorScheme="red"
-        width={"100%"}
-        onClick={setGuestCredentials}
+        width="100%"
+        onClick={() => {
+          setEmail("ekta@org.in");
+          setPassword("123456789");
+        }}
       >
         Get Guest User Credentials
       </Button>

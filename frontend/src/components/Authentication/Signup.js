@@ -1,36 +1,91 @@
-import React, { useState } from "react";
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
-  VStack,
-  useToast,
-} from "@chakra-ui/react";
+import { Button } from "@chakra-ui/button";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
+import { VStack } from "@chakra-ui/layout";
+import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useState } from "react";
+import { useHistory } from "react-router";
 
 const Signup = () => {
-  // state management
   const [show, setShow] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [pic, setPic] = useState("");
-  const [loading, setLoading] = useState(false);
-  // for displaying toast message
+  const handleClick = () => setShow(!show);
   const toast = useToast();
   const history = useHistory();
 
-  // function to display the password
-  const handleClick = () => setShow(!show);
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [confirmpassword, setConfirmpassword] = useState();
+  const [password, setPassword] = useState();
+  const [pic, setPic] = useState();
+  const [picLoading, setPicLoading] = useState(false);
 
-  // function for uploading images to Cloudinary!
+  const submitHandler = async () => {
+    setPicLoading(true);
+    if (!name || !email || !password || !confirmpassword) {
+      toast({
+        title: "Please Fill all the Feilds",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+    if (password !== confirmpassword) {
+      toast({
+        title: "Passwords Do Not Match",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+    console.log(name, email, password, pic);
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        "/api/user",
+        {
+          name,
+          email,
+          password,
+          pic,
+        },
+        config
+      );
+      console.log(data);
+      toast({
+        title: "Registration Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setPicLoading(false);
+      history.push("/chats");
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+    }
+  };
+
   const postDetails = (pics) => {
-    setLoading(true);
+    setPicLoading(true);
     if (pics === undefined) {
       toast({
         title: "Please Select an Image!",
@@ -55,11 +110,11 @@ const Signup = () => {
         .then((data) => {
           setPic(data.url.toString());
           console.log(data.url.toString());
-          setLoading(false);
+          setPicLoading(false);
         })
         .catch((err) => {
           console.log(err);
-          setLoading(false);
+          setPicLoading(false);
         });
     } else {
       toast({
@@ -69,142 +124,59 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
-      setLoading(false);
+      setPicLoading(false);
       return;
-    }
-  };
-
-  const submitHandler = async () => {
-    setLoading(true);
-
-    // when fields inputs are missing
-    if (!name || !email || !password || !pic) {
-      toast({
-        title: "Please Fill all the Fields",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      setLoading(false);
-      return;
-    }
-
-    // when password does not matches with confirm password
-    if (password !== confirmPassword) {
-      toast({
-        title: "Password Do Not Match!",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      return;
-    }
-
-    // API request to save it into database!
-    try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      };
-
-      const { data } = await axios.post(
-        "/api/user",
-        {
-          name,
-          email,
-          password,
-          pic,
-        },
-        config
-      );
-
-      //   Registration Successful
-      toast({
-        title: "Registration Successfull!",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-
-      //   setting up the details in Local Storage
-      localStorage.setItem("userInfo", JSON.stringify(data));
-
-      history.push("/chats");
-
-      setLoading(false);
-    } catch (error) {
-      toast({
-        title: "Error Occured!",
-        description: error.response.data.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      setLoading(false);
     }
   };
 
   return (
-    <VStack spacing={"5px"} color={"black"}>
-      {/* Name */}
+    <VStack spacing="5px">
       <FormControl id="first-name" isRequired>
         <FormLabel>Name</FormLabel>
         <Input
-          placeholder="Enter you Name"
+          placeholder="Enter Your Name"
           onChange={(e) => setName(e.target.value)}
         />
       </FormControl>
-
-      {/* Email */}
       <FormControl id="email" isRequired>
-        <FormLabel>Email</FormLabel>
+        <FormLabel>Email Address</FormLabel>
         <Input
-          placeholder="Enter you Email"
+          type="email"
+          placeholder="Enter Your Email Address"
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
-
-      {/* Password */}
       <FormControl id="password" isRequired>
         <FormLabel>Password</FormLabel>
-        <InputGroup>
+        <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
-            placeholder="Enter you Password"
+            placeholder="Enter Password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <InputRightElement width={"4.5rem"}>
+          <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
               {show ? "Hide" : "Show"}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
-
-      {/* ReEnter Password */}
       <FormControl id="password" isRequired>
         <FormLabel>Confirm Password</FormLabel>
-        <InputGroup>
+        <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
-            placeholder="Confirm Password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm password"
+            onChange={(e) => setConfirmpassword(e.target.value)}
           />
-          <InputRightElement width={"4.5rem"}>
+          <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
               {show ? "Hide" : "Show"}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
-
-      {/* User Image */}
-      <FormControl id="pic" isRequired>
+      <FormControl id="pic">
         <FormLabel>Upload your Picture</FormLabel>
         <Input
           type="file"
@@ -213,16 +185,14 @@ const Signup = () => {
           onChange={(e) => postDetails(e.target.files[0])}
         />
       </FormControl>
-
-      {/* Button */}
       <Button
         colorScheme="blue"
-        width={"100%"}
+        width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
-        isLoading={loading}
+        isLoading={picLoading}
       >
-        Sign up
+        Sign Up
       </Button>
     </VStack>
   );
